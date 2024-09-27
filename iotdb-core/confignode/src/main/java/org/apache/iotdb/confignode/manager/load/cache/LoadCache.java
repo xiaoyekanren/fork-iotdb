@@ -19,7 +19,6 @@
 
 package org.apache.iotdb.confignode.manager.load.cache;
 
-import org.apache.iotdb.common.rpc.thrift.TAINodeConfiguration;
 import org.apache.iotdb.common.rpc.thrift.TConfigNodeLocation;
 import org.apache.iotdb.common.rpc.thrift.TConsensusGroupId;
 import org.apache.iotdb.common.rpc.thrift.TConsensusGroupType;
@@ -99,8 +98,7 @@ public class LoadCache {
   public void initHeartbeatCache(IManager configManager) {
     initNodeHeartbeatCache(
         configManager.getNodeManager().getRegisteredConfigNodes(),
-        configManager.getNodeManager().getRegisteredDataNodes(),
-        configManager.getNodeManager().getRegisteredAINodes());
+        configManager.getNodeManager().getRegisteredDataNodes());
     initRegionGroupHeartbeatCache(
         configManager.getClusterSchemaManager().getDatabaseNames().stream()
             .collect(
@@ -112,8 +110,7 @@ public class LoadCache {
   /** Initialize the nodeCacheMap when the ConfigNode-Leader is switched. */
   private void initNodeHeartbeatCache(
       List<TConfigNodeLocation> registeredConfigNodes,
-      List<TDataNodeConfiguration> registeredDataNodes,
-      List<TAINodeConfiguration> registeredAINodes) {
+      List<TDataNodeConfiguration> registeredDataNodes) {
 
     final int CURRENT_NODE_ID = ConfigNodeHeartbeatCache.CURRENT_NODE_ID;
     nodeCacheMap.clear();
@@ -138,13 +135,6 @@ public class LoadCache {
         dataNodeConfiguration -> {
           int dataNodeId = dataNodeConfiguration.getLocation().getDataNodeId();
           createNodeHeartbeatCache(NodeType.DataNode, dataNodeId);
-        });
-
-    // Init AiNodeHeartbeatCache
-    registeredAINodes.forEach(
-        aiNodeConfiguration -> {
-          int aiNodeId = aiNodeConfiguration.getLocation().getAiNodeId();
-          createNodeHeartbeatCache(NodeType.AINode, aiNodeId);
         });
   }
 
